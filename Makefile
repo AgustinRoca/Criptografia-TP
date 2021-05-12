@@ -1,17 +1,27 @@
 CFLAGS = -Wall -Wextra -pedantic -g -std=c11 -fsanitize=address -Wno-unused-parameter
 
-MAIN_OBJ = main.o distribuir.o  recuperar.o utils.o
+INCLUDE_DIR = include
+INCLUDE_FILES = $(shell find $(INCLUDE_DIR) -name *.h)
+
+SOURCE_DIR = src
+SOURCE_FILES = $(shell find $(SOURCE_DIR) -name *.c)
+
+OBJECT_DIR = obj
+OBJECT_FILES = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCE_FILES:%.c=%.o))
+
+OUTPUT_FILE = main
 
 all: main
 
-main: $(MAIN_OBJ)
-	$(CC) $(CFLAGS) -o main $(MAIN_OBJ)
+$(OBJECT_DIR):
+	mkdir -p $(OBJECT_DIR)
 
-recuperar.o:     headers/recuperar.h
-distribuir.o:    headers/distribuir.h
-utils.o:         headers/utils.h
+$(OBJECT_DIR)/%.o:$(SOURCE_DIR)/%.c $(INCLUDE_FILES) $(OBJECT_DIR)
+	$(CC) -I$(INCLUDE_DIR) -c -o $@ $< $(CFLAGS) 
 
-PHONY = all clean
+main:$(OBJECT_FILES)
+	$(CC) -o $(OUTPUT_FILE) $^ $(CFLAGS)
 
+.PHONY:clean
 clean:
-	rm -rf $(MAIN_OBJ) main a.out
+	rm -rf $(OUTPUT_FILE) $(OBJECT_DIR)
