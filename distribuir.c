@@ -6,11 +6,11 @@
 void distribuir(const char * nombreImagenSecreta, int k, const char *nombreDirectorio) {
     FILE * imagenSecreta = fopen(nombreImagenSecreta, "r");
     if(imagenSecreta == NULL) {
-        perror("fopen: ");
+        perror("fopen");
         exit(EXIT_FAILURE);
     }
 
-    
+
 
 
 }

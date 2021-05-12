@@ -7,6 +7,4 @@ int number_of_files_in_directory(const char * directory_path);
 
 int all_files_are_bmp(char *directory_path);
 
-int directory_exists(char *directory_name);
-
 #endif //UTILS_H

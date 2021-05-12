@@ -19,7 +19,7 @@ int number_of_files_in_directory(const char * directory_path) {
 
     DIR * dirp = opendir(directory_path);
     if(dirp == NULL) {
-        perror("opendir: ");
+        perror("opendir");
         exit(EXIT_FAILURE);
     }
     while ((entry = readdir(dirp)) != NULL) {
@@ -37,7 +37,7 @@ int all_files_are_bmp(char *directory_path) {
 
     DIR * dirp = opendir(directory_path);
     if(dirp == NULL) {
-        perror("opendir: ");
+        perror("opendir");
         exit(EXIT_FAILURE);
     }
 
@@ -50,8 +50,4 @@ int all_files_are_bmp(char *directory_path) {
         }
     }
     return 1; // Success
-}
-
-int directory_exists(char *directory_name) {
-
 }

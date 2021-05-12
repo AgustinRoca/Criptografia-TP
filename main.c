@@ -38,7 +38,7 @@ int main(int argc, const char *argv[]) {
     // Verificamos que el directorio exista
     char directory_path[256];
     if (getcwd(directory_path, sizeof(directory_path)) == NULL) {
-        perror("getcwd(): ");
+        perror("getcwd()");
         return -1;
     }
     struct stat sb;
