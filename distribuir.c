@@ -37,8 +37,8 @@ void irAStreamDePixeles(FILE * file){
 }
 
 size_t charArrayToUint(char array[4]){
-    int answer = 0;
-    int base = 1;
+    size_t answer = 0;
+    size_t base = 1;
     for (size_t byte = 0; byte < 4; byte++, base<<=8)
     {
         answer += array[3-byte] * base;
