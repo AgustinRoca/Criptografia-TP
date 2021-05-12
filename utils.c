@@ -46,8 +46,10 @@ int all_files_are_bmp(char *directory_path) {
             continue;
         }
         if(!string_ends_with(entry->d_name, ".bmp")) {
+            closedir(dirp);
             return 0; // Failure
         }
     }
+    closedir(dirp);
     return 1; // Success
 }
