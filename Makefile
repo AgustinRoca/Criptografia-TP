@@ -13,7 +13,7 @@ OUTPUT_FILE = main
 
 all: main
 
-$(OBJECT_DIR)/%.o:$(SOURCE_DIR)/%.c $(INCLUDE_FILES) $(OBJECT_DIR)
+$(OBJECT_DIR)/%.o:$(SOURCE_DIR)/%.c $(INCLUDE_FILES)
 	@mkdir -p $(@D)
 	$(CC) -I$(INCLUDE_DIR) -c -o $@ $< $(CFLAGS) 
 
