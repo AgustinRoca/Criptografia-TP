@@ -156,3 +156,15 @@ char * getFullName(const char * directory, const char * filename){
     strcat(ans, filename);
     return ans;
 }
+
+char parity(byte_t byte){
+    size_t bitsInOne = 0;
+    int base = 1;
+    for (size_t i = 0; i < 8; i++, base <<=1)
+    {
+        if((byte & base) != 0){
+            bitsInOne++;
+        }
+    }
+    return bitsInOne % 2;
+}

@@ -17,4 +17,6 @@ FILE ** getFilesInDirectory(const char * directoryPath);
 
 byte_t getPixel(FILE * file, size_t pixel);
 
+char parity(byte_t byte);
+
 #endif //UTILS_H

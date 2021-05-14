@@ -12,7 +12,7 @@
 // Funciones auxiliares
 byte_t ** getBlocks(FILE * file, size_t blockSize, size_t * blockQty);
 void freeBlocks(byte_t ** blocks, size_t blockQty);
-int evaluatePolynomial(int polynomial, size_t maxDegree, int x);
+byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x);
 byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty);
 
 void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDirectorio) {
@@ -37,6 +37,17 @@ void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDi
 
     for (size_t camuflageFile = 0; camuflageFile < filesQty; camuflageFile++) {
         byte_t ** camuflageBlocks = getTopLeftBlocks(files[camuflageFile], k);
+        for (size_t blockNumber = 0; blockNumber < k; blockNumber++) {
+            // TODO: chequear que no este usando un X repetido
+            byte_t fx = evaluatePolynomial(bloques[blockNumber], k, camuflageBlocks[blockNumber][0]);
+            byte_t modifiedBlock[4];
+            modifiedBlock[0] = camuflageBlocks[blockNumber][0];
+            modifiedBlock[1] = (camuflageBlocks[blockNumber][1] & 11111000) + ((fx & 11100000) >> 5);
+            modifiedBlock[2] = (camuflageBlocks[blockNumber][2] & 11111000) + ((fx & 00011100) >> 2);
+            modifiedBlock[3] = (camuflageBlocks[blockNumber][3] & 11111000) +  (fx & 00000011) + (parity(fx) << 2);
+            // TODO: poner el modifiedBlock en la imagen
+        }
+        
         freeBlocks(camuflageBlocks, k);
     }
     printf("Bloques de camuflage obtenidos\n");
@@ -87,13 +98,13 @@ void freeBlocks(byte_t ** blocks, size_t blocksQty){
     free(blocks);
 }
 
-int evaluatePolynomial(int polynomial, size_t maxDegree, int x){
+byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x){
     if(x > 255)
         perror("Byte demasiado grande para el polinomio (>= 2^8)");
-    int ans = 0;
+    byte_t ans = 0;
     int base = 1;
     for (size_t degree = 0; degree < maxDegree; degree++, base <<= 1) {
-        if((polynomial & base) != 0){
+        if((polynomial[degree] & base) != 0){
             ans = sum(ans, power(x, degree));
         }
     }
