@@ -1,10 +1,10 @@
 CFLAGS = -Wall -Wextra -pedantic -g -std=c11 -fsanitize=address -Wno-unused-parameter
 
 INCLUDE_DIR = include
-INCLUDE_FILES = $(shell find $(INCLUDE_DIR) -name *.h)
+INCLUDE_FILES = $(shell find $(INCLUDE_DIR) -name "*.h")
 
 SOURCE_DIR = src
-SOURCE_FILES = $(shell find $(SOURCE_DIR) -name *.c)
+SOURCE_FILES = $(shell find $(SOURCE_DIR) -name "*.c")
 
 OBJECT_DIR = obj
 OBJECT_FILES = $(patsubst $(SOURCE_DIR)/%,$(OBJECT_DIR)/%,$(SOURCE_FILES:%.c=%.o))
