@@ -1,10 +1,20 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-int string_ends_with(const char * str, const char * suffix);
+typedef unsigned char byte_t;
 
-int number_of_files_in_directory(const char * directory_path);
+int stringEndsWith(const char * str, const char * suffix);
 
-int all_files_are_bmp(char *directory_path);
+int numberOfFilesInDirectory(const char * directoryPath);
+
+int allFilesAreBmp(char *directoryPath);
+
+void goToPixelStream(FILE * file, size_t * width, size_t * height);
+
+void closeFiles(FILE ** files, size_t filesQty);
+
+FILE ** getFilesInDirectory(const char * directoryPath);
+
+byte_t getPixel(FILE * file, size_t pixel);
 
 #endif //UTILS_H

@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "distribuir.h": "c",
+        "utils.h": "c"
+    }
+}

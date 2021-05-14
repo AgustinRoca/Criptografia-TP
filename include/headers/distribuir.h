@@ -10,7 +10,7 @@
                             secreto (en el caso de que se haya elegido la opción (d)), o donde están las imágenes que
                             contienen oculto el secreto ( en el caso de que se haya elegido la opción (r))
  */
-void distribuir(const char * nombreImagenSecreta, int k, const char *nombreDirectorio);
+void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDirectorio);
 
 
 #endif //DISTRIBUIR_H

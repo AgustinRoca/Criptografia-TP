@@ -8,14 +8,17 @@
 #include "headers/distribuir.h"
 #include "headers/recuperar.h"
 
+#define MIN_K 4
+#define MAX_K 6
+
 // Prototypes
-static void show_help();
+static void showHelp();
 
 
 int main(int argc, const char *argv[]) {
     if(argc == 2) {
         if(strcmp(argv[1],"--help") == 0) {
-            show_help();
+            showHelp();
             return 0;
         } else {
             printf("Se esperan 4 parámetros.\nVease la opción --help para ver cómo invocar al programa.\n");
@@ -28,9 +31,13 @@ int main(int argc, const char *argv[]) {
     }
     // Tenemos los 4 parámetros
     const int k = atoi(argv[3]);
+    if(k < MIN_K || k > MAX_K){
+        printf("K debe estar entre %d y %d\n", MIN_K, MAX_K);
+        return -1;
+    }
 
     // Verificamos que el archivo sea de extensión .bmp
-    if(!string_ends_with(argv[2], ".bmp")) {
+    if(!stringEndsWith(argv[2], ".bmp")) {
         printf("El nombre del archivo debe ser de formato \"nombre.bmp\"\n");
         return -1;
     }
@@ -50,13 +57,13 @@ int main(int argc, const char *argv[]) {
     }
 
     // Verificamos que el directorio contenga k archivos
-    if(k != number_of_files_in_directory(directory_path)) {
+    if(k > numberOfFilesInDirectory(directory_path)) {
         printf("El directorio \"%s\" debe tener al menos %d archivos\n", argv[4], k);
         return -1;
     }
 
     // Verificamos que todos los archivos sean de extensión .bmp
-    if(!all_files_are_bmp(directory_path)) {
+    if(!allFilesAreBmp(directory_path)) {
         printf("Error: todos los archivos del directorio \"%s\" deben ser del tipo .bmp\n", argv[4]);
         return -1;
     }
@@ -74,7 +81,7 @@ int main(int argc, const char *argv[]) {
     return 0;
 }
 
-static void show_help() {
+static void showHelp() {
     printf("\nEl programa debe recibir como parámetros (EN EL SIGUIENTE ORDEN):\n\n");
     printf("\t. d : indica que se va a distribuir una imagen secreta en otras imágenes\n\n");
     printf("\t. r : indica que se va a recuperar una imagen secreta a partir de otras imágenes\n\n");

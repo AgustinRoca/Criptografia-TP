@@ -34,6 +34,9 @@ cmake-build-debug
 *.so.*
 *.dylib
 
+# Mac files
+**/.DS_Store
+
 # Executables
 *.exe
 *.out
