@@ -4,6 +4,7 @@
 
 #define MAX_DEGREE 8 // GF(2^8)
 #define GX 355 // x8 + x6 + x5 + x1 +1 (polinomio primitivo para el GF(2^8))
+#define ELEMS 256 // 2^8
 
 
 size_t getDegree(int accum);
@@ -55,9 +56,16 @@ size_t getDegree(int accum){
 }
 
 int inverse(int a){
-    if(GX != 355){
-        perror("Solo se soporta el polinomio 355");
+    if(a == 0){
+        return 0;
     }
-    // TODO: tabla de inversos
-    return a;
+
+    for (size_t inverse = 0; inverse < ELEMS; inverse++)
+    {
+        if(multiply(a, inverse) == 1){
+            return inverse; 
+        }
+    }
+    perror("Inverse not found");
+    return 0;
 }
