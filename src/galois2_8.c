@@ -53,3 +53,11 @@ size_t getDegree(int accum){
     }
     return degree - 1;
 }
+
+int inverse(int a){
+    if(GX != 355){
+        perror("Solo se soporta el polinomio 355");
+    }
+    // TODO: tabla de inversos
+    return a;
+}

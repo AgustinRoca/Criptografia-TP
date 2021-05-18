@@ -13,7 +13,6 @@
 byte_t ** getBlocks(FILE * file, size_t blockSize, size_t * blockQty);
 void freeBlocks(byte_t ** blocks, size_t blockQty);
 byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x);
-byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty);
 int contains(byte_t ** bytes, byte_t byte, size_t blockNumber, size_t filesQty);
 
 void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDirectorio) {
@@ -142,32 +141,6 @@ byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x){
         }
     }
     return ans;
-}
-
-byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty){
-    size_t width;
-    size_t height;
-    goToPixelStream(file, &width, &height);
-
-    byte_t ** blocks = malloc(blocksQty * sizeof(*blocks));
-    size_t blockRow = -1;
-    for (size_t blockNumber = 0; blockNumber < blocksQty; blockNumber++)
-    {
-        if(((2*blockNumber) % width) == 0){
-            blockRow++;
-        }
-        size_t topLeft = width * (height - 1 - 2*blockRow) + ((2*blockNumber)%width);
-        size_t topRight = topLeft + 1;
-        size_t bottomLeft = width * (height - 2 - 2*blockRow) + ((2*blockNumber)%width);
-        size_t bottomRight = bottomLeft + 1;
-        blocks[blockNumber] = malloc(4 * sizeof(**blocks));
-        blocks[blockNumber][0] = getPixel(file, topLeft);
-        blocks[blockNumber][1] = getPixel(file, topRight);
-        blocks[blockNumber][2] = getPixel(file, bottomLeft);
-        blocks[blockNumber][3] = getPixel(file, bottomRight);
-    }
-
-    return blocks;
 }
 
 int contains(byte_t ** bytes, byte_t byte, size_t blockNumber, size_t filesQty){

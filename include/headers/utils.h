@@ -24,4 +24,6 @@ char parity(byte_t byte);
 
 size_t sToBinary(const char * s);
 
+byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty);
+
 #endif //UTILS_H

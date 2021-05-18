@@ -7,4 +7,6 @@ int multiply(int a, int b);
 
 int power(int polynomial, size_t exponent);
 
+int inverse(int a);
+
 #endif // GALOIS_2_8_H
