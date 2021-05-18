@@ -17,18 +17,19 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
     goToPixelStream(files[0], &width, &height);
         
     size_t blockQty = width * height / k;
-    byte_t xFxPairs[filesQty][blockQty][2];
+    byte_t x[filesQty][blockQty];
+    byte_t fx[filesQty][blockQty];
     for (size_t camuflageFile = 0; camuflageFile < filesQty; camuflageFile++) {
         byte_t ** camuflageBlocks = getTopLeftBlocks(files[camuflageFile], blockQty);
         for (size_t blockNumber = 0; blockNumber < blockQty; blockNumber++)
         {
-            byte_t x = camuflageBlocks[blockNumber][0];
-            byte_t fx = (camuflageBlocks[blockNumber][1] & sToBinary("00000111")) << 5;
-            fx += (camuflageBlocks[blockNumber][2] & sToBinary("00000111")) << 2;
-            fx += (camuflageBlocks[blockNumber][3] & sToBinary("00000011"));
-            if(parity(fx) == ((camuflageBlocks[blockNumber][3] & sToBinary("00000100")) >> 2)){
-                xFxPairs[camuflageFile][blockNumber][0] = x;
-                xFxPairs[camuflageFile][blockNumber][1] = fx;
+            byte_t xInBlock = camuflageBlocks[blockNumber][0];
+            byte_t fxInBlock = (camuflageBlocks[blockNumber][1] & sToBinary("00000111")) << 5;
+            fxInBlock += (camuflageBlocks[blockNumber][2] & sToBinary("00000111")) << 2;
+            fxInBlock += (camuflageBlocks[blockNumber][3] & sToBinary("00000011"));
+            if(parity(fxInBlock) == ((camuflageBlocks[blockNumber][3] & sToBinary("00000100")) >> 2)){
+                x[camuflageFile][blockNumber] = xInBlock;
+                fx[camuflageFile][blockNumber] = fxInBlock;
             }
         }        
     }
@@ -39,11 +40,11 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
         // Calculo s1
         s[j][0] = 0;
         for (size_t i = 0; i < filesQty; i++) {
-            byte_t y = xFxPairs[i][j][1];
+            byte_t y = fx[i][j];
             byte_t productoria = 1;
             for (size_t q = 0; q < filesQty; q++) {
                 if(i != q){
-                    productoria = multiply(productoria, multiply(xFxPairs[q][j][0], inverse(sum(xFxPairs[i][j][0], xFxPairs[q][j][0]))));
+                    productoria = multiply(productoria, multiply(x[q][j], inverse(sum(x[i][j], x[q][j]))));
                 }
             }
             s[j][0] = sum(s[j][0], multiply(y, productoria));
@@ -55,11 +56,13 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
             s[j][r] = 0;
             for (int i = 0; i < k - r; i++)
             {            
-                byte_t yprima = multiply(sum(xFxPairs[i][j][1], s[j][0]), inverse(xFxPairs[i][j][0]));
+                byte_t yprima = multiply(sum(fx[i][j], s[j][0]), inverse(x[i][j]));
                 byte_t productoria = 1;
-                for (int q = 0; q < k - r; q++) {
-                    if(i != q){
-                        productoria = multiply(productoria, multiply(xFxPairs[q][j][0], inverse(sum(xFxPairs[i][j][0], xFxPairs[q][j][0]))));
+                if(yprima != 0){
+                    for (int q = 0; q < k - r; q++) {
+                        if(i != q){
+                            productoria = multiply(productoria, multiply(x[q][j], inverse(sum(x[i][j], x[q][j]))));
+                        }
                     }
                 }
                 s[j][r] = sum(s[j][r], multiply(yprima, productoria));
@@ -68,7 +71,7 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
     }
     printf("Bytes obtenidos\n");
     
-    FILE * secret = fopen(nombreImagenSecreta, "w");
+    FILE * secret = fopen(nombreImagenSecreta, "w+");
     if(secret == NULL)
     {
         perror("fopen");
