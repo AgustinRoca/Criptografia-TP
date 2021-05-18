@@ -48,7 +48,7 @@ int numberOfFilesInDirectory(const char * directoryPath) {
     return file_count;
 }
 
-FILE ** getFilesInDirectory(const char * directoryPath){
+FILE ** getFilesInDirectory(const char * directoryPath, const char * mode){
     FILE ** files = NULL;
     size_t filesQty = 0;
     struct dirent *entry;
@@ -64,7 +64,7 @@ FILE ** getFilesInDirectory(const char * directoryPath){
                 files = realloc(files, (filesQty + CHUNK) * sizeof(*files));
             }
             char * path = getFullName(directoryPath, entry->d_name);
-            files[filesQty++] = fopen(path, "r");
+            files[filesQty++] = fopen(path, mode);
             free(path);
         }
     }
@@ -144,9 +144,13 @@ void closeFiles(FILE ** files, size_t filesQty){
 }
 
 byte_t getPixel(FILE * file, size_t pixel){
-    fseek(file, OFFSET_POSITION, SEEK_SET); // salteo hasta la posicion del offset
-    fseek(file, pixel, SEEK_CUR); // salteo hasta el pixel desde el offset
+    fseek(file, pixel + getOffset(file), SEEK_SET);
     return (byte_t) fgetc(file);
+}
+
+void setPixel(FILE * file, size_t pixel, byte_t byte){
+    fseek(file, pixel + getOffset(file), SEEK_SET);
+    fputc(byte, file);
 }
 
 char * getFullName(const char * directory, const char * filename){
@@ -158,13 +162,20 @@ char * getFullName(const char * directory, const char * filename){
 }
 
 char parity(byte_t byte){
-    size_t bitsInOne = 0;
-    int base = 1;
-    for (size_t i = 0; i < 8; i++, base <<=1)
+    char bitsInOne = byte & 1;
+    for (size_t i = 0; i < 8; i++, byte >>= 1)
     {
-        if((byte & base) != 0){
-            bitsInOne++;
-        }
+        bitsInOne ^= byte & 1;
     }
-    return bitsInOne % 2;
+
+    return bitsInOne;
+}
+
+size_t sToBinary(const char * s){
+    size_t i = 0;
+    while (*s) {
+        i <<= 1;
+        i += *s++ - '0';
+    }
+    return i;
 }

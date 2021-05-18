@@ -14,6 +14,7 @@ byte_t ** getBlocks(FILE * file, size_t blockSize, size_t * blockQty);
 void freeBlocks(byte_t ** blocks, size_t blockQty);
 byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x);
 byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty);
+int contains(byte_t ** bytes, byte_t byte, size_t blockNumber, size_t filesQty);
 
 void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDirectorio) {
     FILE * imagenSecreta = fopen(nombreImagenSecreta, "r");
@@ -31,27 +32,59 @@ void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDi
     printf("Tengo %zu bloques de tamaño %zu\n", cantidadDeBloques, k);
 
     // Obtengo las imagenes de camuflaje
-    FILE ** files = getFilesInDirectory(nombreDirectorio);
+    FILE ** files = getFilesInDirectory(nombreDirectorio, "r+");
     size_t filesQty = numberOfFilesInDirectory(nombreDirectorio);
     printf("%zu imagenes de camuflaje abiertas\n", filesQty);
 
+    byte_t ** usedX = malloc(filesQty * sizeof(*usedX));
+    for (size_t fileNumber = 0; fileNumber < filesQty; fileNumber++)
+    {
+        usedX[fileNumber] = malloc(cantidadDeBloques * sizeof(**usedX));
+    }
+        
     for (size_t camuflageFile = 0; camuflageFile < filesQty; camuflageFile++) {
-        byte_t ** camuflageBlocks = getTopLeftBlocks(files[camuflageFile], k);
-        for (size_t blockNumber = 0; blockNumber < k; blockNumber++) {
-            // TODO: chequear que no este usando un X repetido
+        size_t width;
+        size_t height;
+        goToPixelStream(files[camuflageFile], &width, &height);
+
+        byte_t ** camuflageBlocks = getTopLeftBlocks(files[camuflageFile], cantidadDeBloques);
+        size_t blockRow = -1;
+        for (size_t blockNumber = 0; blockNumber < cantidadDeBloques; blockNumber++) {
+            // Chequeo que no haya usado ese X todavia
+            while(contains(usedX, camuflageBlocks[blockNumber][0], blockNumber, camuflageFile + 1)){
+                camuflageBlocks[blockNumber][0] = (camuflageBlocks[blockNumber][0] + 1) % 256; // Si lo usé, lo cambio
+            }
+            usedX[camuflageFile][blockNumber] = camuflageBlocks[blockNumber][0]; // Guardo que X usé
+            
             byte_t fx = evaluatePolynomial(bloques[blockNumber], k, camuflageBlocks[blockNumber][0]);
             byte_t modifiedBlock[4];
             modifiedBlock[0] = camuflageBlocks[blockNumber][0];
-            modifiedBlock[1] = (camuflageBlocks[blockNumber][1] & 11111000) + ((fx & 11100000) >> 5);
-            modifiedBlock[2] = (camuflageBlocks[blockNumber][2] & 11111000) + ((fx & 00011100) >> 2);
-            modifiedBlock[3] = (camuflageBlocks[blockNumber][3] & 11111000) +  (fx & 00000011) + (parity(fx) << 2);
-            // TODO: poner el modifiedBlock en la imagen
+            modifiedBlock[1] = (camuflageBlocks[blockNumber][1] & sToBinary("11111000")) + ((fx & sToBinary("11100000")) >> 5);
+            modifiedBlock[2] = (camuflageBlocks[blockNumber][2] & sToBinary("11111000")) + ((fx & sToBinary("00011100")) >> 2);
+            modifiedBlock[3] = (camuflageBlocks[blockNumber][3] & sToBinary("11111000")) + (fx & sToBinary("00000011")) + (parity(fx) << 2);
+            if(((2*blockNumber) % width) == 0){
+                blockRow++;
+            }
+            size_t topLeft = width * (height - 1 - 2*blockRow) + ((2*blockNumber)%width);
+            size_t topRight = topLeft + 1;
+            size_t bottomLeft = width * (height - 2 - 2*blockRow) + ((2*blockNumber)%width);
+            size_t bottomRight = bottomLeft + 1;
+            
+            setPixel(files[camuflageFile], topLeft, modifiedBlock[0]);
+            setPixel(files[camuflageFile], topRight, modifiedBlock[1]);
+            setPixel(files[camuflageFile], bottomLeft, modifiedBlock[2]);
+            setPixel(files[camuflageFile], bottomRight, modifiedBlock[3]);
         }
         
         freeBlocks(camuflageBlocks, k);
     }
-    printf("Bloques de camuflage obtenidos\n");
+    printf("Imagenes modificadas\n");
 
+    for (size_t fileNumber = 0; fileNumber < filesQty; fileNumber++)
+    {
+        free(usedX[fileNumber]);
+    }
+    free(usedX);
     closeFiles(files, filesQty);
     freeBlocks(bloques, cantidadDeBloques);
     fclose(imagenSecreta);
@@ -117,19 +150,32 @@ byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty){
     goToPixelStream(file, &width, &height);
 
     byte_t ** blocks = malloc(blocksQty * sizeof(*blocks));
-    for (size_t i = 0; i < blocksQty; i++)
+    size_t blockRow = -1;
+    for (size_t blockNumber = 0; blockNumber < blocksQty; blockNumber++)
     {
-        blocks[i] = malloc(4 * sizeof(**blocks));
-        size_t topLeft = width * (height - 1) + 2*i;
+        if(((2*blockNumber) % width) == 0){
+            blockRow++;
+        }
+        size_t topLeft = width * (height - 1 - 2*blockRow) + ((2*blockNumber)%width);
         size_t topRight = topLeft + 1;
-        size_t bottomLeft = width * (height - 2) + 2*i;
+        size_t bottomLeft = width * (height - 2 - 2*blockRow) + ((2*blockNumber)%width);
         size_t bottomRight = bottomLeft + 1;
-
-        blocks[i][0] = getPixel(file, topLeft);
-        blocks[i][1] = getPixel(file, topRight);
-        blocks[i][2] = getPixel(file, bottomLeft);
-        blocks[i][3] = getPixel(file, bottomRight);
+        blocks[blockNumber] = malloc(4 * sizeof(**blocks));
+        blocks[blockNumber][0] = getPixel(file, topLeft);
+        blocks[blockNumber][1] = getPixel(file, topRight);
+        blocks[blockNumber][2] = getPixel(file, bottomLeft);
+        blocks[blockNumber][3] = getPixel(file, bottomRight);
     }
 
     return blocks;
+}
+
+int contains(byte_t ** bytes, byte_t byte, size_t blockNumber, size_t filesQty){
+    for (size_t fileNumber = 0; fileNumber < filesQty; fileNumber++)
+    {
+        if(bytes[fileNumber][blockNumber] == byte){
+            return 1;
+        }
+    }
+    return 0;
 }
