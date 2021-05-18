@@ -3,6 +3,8 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <sys/stat.h>
 #include "headers/utils.h"
 
 #define OFFSET_POSITION 10
@@ -20,6 +22,7 @@ unsigned int getOffset(FILE * file);
 unsigned int getHeight(FILE * file);
 unsigned int getWidth(FILE * file);
 char * getFullName(const char * directory, const char * filename);
+void rek_mkdir(char *path);
 
 int stringEndsWith(const char * str, const char * suffix) {
     size_t str_len = strlen(str);
@@ -204,4 +207,26 @@ byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty){
     }
 
     return blocks;
+}
+
+void rek_mkdir(char *path) {
+    char *sep = strrchr(path, '/');
+    if(sep != NULL) {
+        *sep = 0;
+        rek_mkdir(path);
+        *sep = '/';
+    }
+    if(mkdir(path, 0755) && errno != EEXIST)
+        printf("error while trying to create '%s'\n%m\n", path); 
+}
+
+FILE *fopen_mkdir(const char *path, const char *mode) {
+    char *sep = strrchr(path, '/');
+    if(sep) { 
+        char *path0 = strdup(path);
+        path0[ sep - path ] = 0;
+        rek_mkdir(path0);
+        free(path0);
+    }
+    return fopen(path,mode);
 }

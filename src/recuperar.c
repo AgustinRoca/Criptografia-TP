@@ -71,7 +71,7 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
     }
     printf("Bytes obtenidos\n");
     
-    FILE * secret = fopen(nombreImagenSecreta, "w+");
+    FILE * secret = fopen_mkdir(nombreImagenSecreta, "w+");
     if(secret == NULL)
     {
         perror("fopen");

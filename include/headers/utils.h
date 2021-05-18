@@ -26,4 +26,6 @@ size_t sToBinary(const char * s);
 
 byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty);
 
+FILE *fopen_mkdir(const char *path, const char *mode);
+
 #endif //UTILS_H

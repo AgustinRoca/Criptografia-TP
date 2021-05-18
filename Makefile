@@ -21,7 +21,7 @@ main:$(OBJECT_FILES)
 	$(CC) -o $(OUTPUT_FILE) $^ $(CFLAGS)
 
 .PHONY:clean
-clean:
+clean: reset
 	rm -rf $(OUTPUT_FILE) $(OBJECT_DIR)
 
 copy:

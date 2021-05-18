@@ -67,6 +67,8 @@ main
 # VSCode
 .vscode/
 
-
 # Backup folder
 backupCamuflaje
+
+# Output
+decode/
