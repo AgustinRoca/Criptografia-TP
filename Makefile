@@ -23,3 +23,8 @@ main:$(OBJECT_FILES)
 .PHONY:clean
 clean:
 	rm -rf $(OUTPUT_FILE) $(OBJECT_DIR)
+
+copy:
+	cp -rT ./camuflaje ./backupCamuflaje
+reset:
+	cp -rT ./backupCamuflaje ./camuflaje
