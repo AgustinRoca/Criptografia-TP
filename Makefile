@@ -25,6 +25,21 @@ clean:
 	rm -rf $(OUTPUT_FILE) $(OBJECT_DIR)
 
 copy:
-	cp -rT ./camuflaje ./backupCamuflaje
+ifneq (,$(wildcard ./camuflaje ))
+ifneq (,$(wildcard ./backupCamuflaje ))
+	rm -r backupCamuflaje
+endif
+	cp -r ./camuflaje ./backupCamuflaje
+else
+	@echo "camuflaje not found"
+endif
+
 reset:
-	cp -rT ./backupCamuflaje ./camuflaje
+ifneq (,$(wildcard ./backupCamuflaje ))
+ifneq (,$(wildcard ./camuflaje ))
+	rm -r camuflaje
+endif
+	cp -r ./backupCamuflaje ./camuflaje
+else
+	@echo "backupCamuflaje not found"
+endif
