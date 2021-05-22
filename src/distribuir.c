@@ -98,7 +98,7 @@ byte_t ** getBlocks(FILE * file, size_t blockSize, size_t * blockQty){
     byte_t newBlock[blockSize];
     
     byte_t ** blocks = NULL;
-    for(*blockQty = 0; fread(newBlock, 1, sizeof(newBlock), file) > 0; (*blockQty)++) {
+    for(*blockQty = 0; fread(newBlock, 1, blockSize, file) > 0; (*blockQty)++) {
         if(((*blockQty) % CHUNK) == 0){
             blocks = realloc(blocks, ((*blockQty) + CHUNK) * sizeof(*blocks));
             if(blocks == NULL){
@@ -112,7 +112,7 @@ byte_t ** getBlocks(FILE * file, size_t blockSize, size_t * blockQty){
             }            
         }
 
-        for(size_t byteNumber = 0; byteNumber < sizeof(newBlock); byteNumber++){
+        for(size_t byteNumber = 0; byteNumber < blockSize; byteNumber++){
             blocks[(*blockQty)][byteNumber] = newBlock[byteNumber];
         }
     }
