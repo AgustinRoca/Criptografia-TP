@@ -20,6 +20,7 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
     byte_t x[filesQty][blockQty];
     byte_t fx[filesQty][blockQty];
     for (size_t camuflageFile = 0; camuflageFile < filesQty; camuflageFile++) {
+        size_t discarded = 0;
         byte_t ** camuflageBlocks = getTopLeftBlocks(files[camuflageFile], blockQty);
         for (size_t blockNumber = 0; blockNumber < blockQty; blockNumber++)
         {
@@ -30,8 +31,12 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
             if(parity(fxInBlock) == ((camuflageBlocks[blockNumber][3] & sToBinary("00000100")) >> 2)){
                 x[camuflageFile][blockNumber] = xInBlock;
                 fx[camuflageFile][blockNumber] = fxInBlock;
+            } else {
+                discarded++;
             }
-        }        
+        }
+        printf("Discarded: %zu of %zu blocks\n", discarded, blockQty);
+        free(camuflageBlocks);   
     }
     printf("Pares (x, F(x)) obtenidos\n");
 
@@ -39,12 +44,14 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
     for (size_t j = 0; j < blockQty; j++){
         // Calculo s1
         s[j][0] = 0;
-        for (size_t i = 0; i < filesQty; i++) {
+        for (int i = 0; i < k; i++) {
             byte_t y = fx[i][j];
             byte_t productoria = 1;
-            for (size_t q = 0; q < filesQty; q++) {
-                if(i != q){
-                    productoria = multiply(productoria, multiply(x[q][j], inverse(sum(x[i][j], x[q][j]))));
+            if(y != 0){
+                for (int q = 0; q < k; q++) {
+                    if(i != q){
+                        productoria = multiply(productoria, multiply(x[q][j], inverse(sum(x[i][j], x[q][j]))));
+                    }
                 }
             }
             s[j][0] = sum(s[j][0], multiply(y, productoria));
@@ -77,6 +84,7 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
         perror("fopen");
     }
 
+    // duplico algun archivo
     fseek(files[0], 0, SEEK_SET);
     int c = fgetc(files[0]);
     while (c != EOF)
@@ -84,6 +92,8 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
         fputc(c, secret);
         c = fgetc(files[0]);
     }
+
+    // cambio los pixeles del contenido
     goToPixelStream(secret, &width, &height);
     for (size_t j = 0; j < blockQty; j++){
         for (int r = 0; r < k; r++){

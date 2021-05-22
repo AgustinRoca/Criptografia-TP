@@ -178,7 +178,8 @@ size_t sToBinary(const char * s){
     size_t i = 0;
     while (*s) {
         i <<= 1;
-        i += *s++ - '0';
+        i += *s - '0';
+        s++;
     }
     return i;
 }
