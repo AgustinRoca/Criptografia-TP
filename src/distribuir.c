@@ -50,7 +50,7 @@ void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDi
         size_t blockRow = -1;
         for (size_t blockNumber = 0; blockNumber < cantidadDeBloques; blockNumber++) {
             // Chequeo que no haya usado ese X todavia
-            while(contains(usedX, camuflageBlocks[blockNumber][0], blockNumber, camuflageFile + 1)){
+            while(contains(usedX, camuflageBlocks[blockNumber][0], blockNumber, camuflageFile) || camuflageBlocks[blockNumber][0] == 0){
                 camuflageBlocks[blockNumber][0] = (camuflageBlocks[blockNumber][0] + 1) % 256; // Si lo usé, lo cambio
             }
             usedX[camuflageFile][blockNumber] = camuflageBlocks[blockNumber][0]; // Guardo que X usé
@@ -134,11 +134,8 @@ byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x){
     if(x > 255)
         perror("Byte demasiado grande para el polinomio (>= 2^8)");
     byte_t ans = 0;
-    int base = 1;
-    for (size_t degree = 0; degree < maxDegree; degree++, base <<= 1) {
-        if((polynomial[degree] & base) != 0){
-            ans = sum(ans, power(x, degree));
-        }
+    for (size_t degree = 0; degree < maxDegree; degree++) {
+        ans = sum(ans, multiply(polynomial[degree], power(x, degree)));
     }
     return ans;
 }

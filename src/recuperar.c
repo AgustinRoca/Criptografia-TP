@@ -33,7 +33,6 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
                 x[camuflageFile][blockNumber] = xInBlock;
                 fx[camuflageFile][blockNumber] = fxInBlock;
             } else {
-                printf("El byte armado es: %zu, su paridad leida es: %d, deberia ser: %d\n", fxInBlock, (camuflageBlocks[blockNumber][3] >> 2) & sToBinary("00000001"), parity(fxInBlock));
                 discarded++;
             }
         }
