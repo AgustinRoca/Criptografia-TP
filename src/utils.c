@@ -165,7 +165,7 @@ char * getFullName(const char * directory, const char * filename){
 }
 
 char parity(byte_t byte){
-    char bitsInOne = byte & 1;
+    char bitsInOne = 0;
     for (size_t i = 0; i < 8; i++, byte >>= 1)
     {
         bitsInOne ^= byte & 1;

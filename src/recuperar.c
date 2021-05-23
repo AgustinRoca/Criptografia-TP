@@ -25,13 +25,15 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
         for (size_t blockNumber = 0; blockNumber < blockQty; blockNumber++)
         {
             byte_t xInBlock = camuflageBlocks[blockNumber][0];
-            byte_t fxInBlock = (camuflageBlocks[blockNumber][1] & sToBinary("00000111")) << 5;
-            fxInBlock += (camuflageBlocks[blockNumber][2] & sToBinary("00000111")) << 2;
-            fxInBlock += (camuflageBlocks[blockNumber][3] & sToBinary("00000011"));
-            if(parity(fxInBlock) == ((camuflageBlocks[blockNumber][3] & sToBinary("00000100")) >> 2)){
+            byte_t fxInBlock = 0;
+            fxInBlock ^= (camuflageBlocks[blockNumber][1] << 5) & sToBinary("11100000");
+            fxInBlock ^= (camuflageBlocks[blockNumber][2] << 2) & sToBinary("00011100");
+            fxInBlock ^= (camuflageBlocks[blockNumber][3] & sToBinary("00000011"));
+            if(parity(fxInBlock) == ((camuflageBlocks[blockNumber][3] >> 2) & sToBinary("00000001"))){
                 x[camuflageFile][blockNumber] = xInBlock;
                 fx[camuflageFile][blockNumber] = fxInBlock;
             } else {
+                printf("El byte armado es: %zu, su paridad leida es: %d, deberia ser: %d\n", fxInBlock, (camuflageBlocks[blockNumber][3] >> 2) & sToBinary("00000001"), parity(fxInBlock));
                 discarded++;
             }
         }
@@ -62,8 +64,12 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
         {
             s[j][r] = 0;
             for (int i = 0; i < k - r; i++)
-            {            
-                byte_t yprima = multiply(sum(fx[i][j], s[j][0]), inverse(x[i][j]));
+            {   
+                byte_t yprima = fx[i][j];
+                for(int n = 0; n<r; n++){
+                    yprima = sum(yprima, s[j][n]);
+                    yprima = multiply(yprima, inverse(x[i][j]));
+                }
                 byte_t productoria = 1;
                 if(yprima != 0){
                     for (int q = 0; q < k - r; q++) {
