@@ -50,8 +50,12 @@ void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDi
         size_t blockRow = -1;
         for (size_t blockNumber = 0; blockNumber < cantidadDeBloques; blockNumber++) {
             // Chequeo que no haya usado ese X todavia
-            while(contains(usedX, camuflageBlocks[blockNumber][0], blockNumber, camuflageFile) || camuflageBlocks[blockNumber][0] == 0){
-                camuflageBlocks[blockNumber][0] = (camuflageBlocks[blockNumber][0] + 1) % 256; // Si lo usé, lo cambio
+            for(int iteration = 0, overflow = 0; contains(usedX, camuflageBlocks[blockNumber][0], blockNumber, camuflageFile); iteration++){ // Si lo usé, lo cambio
+                if(camuflageBlocks[blockNumber][0] + 1 >= 256){
+                    overflow = 1;
+                    camuflageBlocks[blockNumber][0] = camuflageBlocks[blockNumber][0] - iteration; // reseteo al valor original
+                }
+                camuflageBlocks[blockNumber][0] = camuflageBlocks[blockNumber][0] + (overflow?-1:1); // Si me pase de 256, me voy para atras
             }
             usedX[camuflageFile][blockNumber] = camuflageBlocks[blockNumber][0]; // Guardo que X usé
             
