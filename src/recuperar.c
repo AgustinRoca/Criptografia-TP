@@ -62,22 +62,32 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
         for (int r = 1; r < k; r++)
         {
             s[j][r] = 0;
-            for (int i = 0; i < k - r; i++)
+            char hubo0 = 0;
+            for (int i = 0; i < k - r + hubo0; i++)
             {   
-                byte_t yprima = fx[i][j];
-                for(int n = 0; n<r; n++){
-                    yprima = sum(yprima, s[j][n]);
-                    yprima = multiply(yprima, inverse(x[i][j]));
-                }
-                byte_t productoria = 1;
-                if(yprima != 0){
-                    for (int q = 0; q < k - r; q++) {
-                        if(i != q){
-                            productoria = multiply(productoria, multiply(x[q][j], inverse(sum(x[i][j], x[q][j]))));
+                if(x[i][j] != 0){
+                    byte_t yprima = fx[i][j];
+                    for(int n = 0; n<r; n++){
+                        yprima = sum(yprima, s[j][n]);
+                        yprima = multiply(yprima, inverse(x[i][j]));
+                    }
+                    byte_t productoria = 1;
+                    if(yprima != 0){
+                        char hubo0_2 = 0;
+                        for (int q = 0; q < k - r + hubo0_2; q++) {
+                            if(x[q][j] != 0){
+                                if(i != q){
+                                    productoria = multiply(productoria, multiply(x[q][j], inverse(sum(x[i][j], x[q][j]))));
+                                }
+                            } else {
+                                hubo0_2 = 1;
+                            }
                         }
                     }
+                    s[j][r] = sum(s[j][r], multiply(yprima, productoria));
+                } else {
+                    hubo0 = 1;
                 }
-                s[j][r] = sum(s[j][r], multiply(yprima, productoria));
             }
         }
     }
