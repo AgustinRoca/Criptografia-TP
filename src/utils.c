@@ -219,7 +219,7 @@ void rek_mkdir(char *path) {
         *sep = '/';
     }
     if(mkdir(path, 0755) && errno != EEXIST)
-        printf("error while trying to create '%s'\n%m\n", path); 
+        printf("error while trying to create '%s'\n%s\n", path, strerror(errno)); 
 }
 
 FILE *fopen_mkdir(const char *path, const char *mode) {
