@@ -144,6 +144,7 @@ void closeFiles(FILE ** files, size_t filesQty){
     {
         fclose(files[i]);
     }
+    free(files);
 }
 
 byte_t getPixel(FILE * file, size_t pixel){
