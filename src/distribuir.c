@@ -135,8 +135,6 @@ void freeBlocks(byte_t ** blocks, size_t blocksQty){
 }
 
 byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x){
-    if(x > 255)
-        perror("Byte demasiado grande para el polinomio (>= 2^8)");
     byte_t ans = 0;
     for (size_t degree = 0; degree < maxDegree; degree++) {
         ans = sum(ans, multiply(polynomial[degree], power(x, degree)));
