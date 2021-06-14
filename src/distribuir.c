@@ -79,7 +79,7 @@ void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDi
             setPixel(files[camuflageFile], bottomRight, modifiedBlock[3]);
         }
         
-        freeBlocks(camuflageBlocks, k);
+        freeBlocks(camuflageBlocks, cantidadDeBloques);
     }
     printf("Imagenes modificadas\n");
 
