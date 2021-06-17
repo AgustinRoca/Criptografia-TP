@@ -29,7 +29,7 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
             fxInBlock ^= (camuflageBlocks[blockNumber][1] << 5) & sToBinary("11100000");
             fxInBlock ^= (camuflageBlocks[blockNumber][2] << 2) & sToBinary("00011100");
             fxInBlock ^= (camuflageBlocks[blockNumber][3] & sToBinary("00000011"));
-            if(parity(fxInBlock) == ((camuflageBlocks[blockNumber][3] >> 2) & sToBinary("00000001"))){
+            if(parity(fxInBlock) == (char) ((camuflageBlocks[blockNumber][3] >> 2) & sToBinary("00000001"))){
                 x[camuflageFile][blockNumber] = xInBlock;
                 fx[camuflageFile][blockNumber] = fxInBlock;
             } else {
