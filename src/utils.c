@@ -232,3 +232,10 @@ FILE *fopen_mkdir(const char *path, const char *mode) {
     }
     return fopen(path,mode);
 }
+
+void freeBlocks(byte_t ** blocks, size_t blocksQty){
+    for(size_t block = 0; block < blocksQty; block++){
+        free(blocks[block]);
+    }
+    free(blocks);
+}

@@ -37,7 +37,7 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
             }
         }
         printf("Discarded: %zu of %zu blocks\n", discarded, blockQty);
-        free(camuflageBlocks);   
+        freeBlocks(camuflageBlocks, blockQty);  
     }
     printf("Pares (x, F(x)) obtenidos\n");
 

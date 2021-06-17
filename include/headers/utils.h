@@ -28,4 +28,6 @@ byte_t ** getTopLeftBlocks(FILE * file, size_t blocksQty);
 
 FILE *fopen_mkdir(const char *path, const char *mode);
 
+void freeBlocks(byte_t ** blocks, size_t blocksQty);
+
 #endif //UTILS_H

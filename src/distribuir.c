@@ -127,13 +127,6 @@ byte_t ** getBlocks(FILE * file, size_t blockSize, size_t * blockQty){
     return blocks;
 }
 
-void freeBlocks(byte_t ** blocks, size_t blocksQty){
-    for(size_t block = 0; block < blocksQty; block++){
-        free(blocks[block]);
-    }
-    free(blocks);
-}
-
 byte_t evaluatePolynomial(byte_t * polynomial, size_t maxDegree, byte_t x){
     byte_t ans = 0;
     for (size_t degree = 0; degree < maxDegree; degree++) {
