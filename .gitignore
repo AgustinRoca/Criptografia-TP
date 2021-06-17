@@ -63,6 +63,7 @@ dkms.conf
 # GCC Compiler outputs
 obj/
 main
+ss
 
 # VSCode
 .vscode/
