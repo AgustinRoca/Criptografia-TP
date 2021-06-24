@@ -10,7 +10,6 @@
 void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirectorio) {
     FILE ** files = getFilesInDirectory(nombreDirectorio, "r");
     size_t filesQty = numberOfFilesInDirectory(nombreDirectorio);
-    printf("%zu imagenes de camuflaje abiertas\n", filesQty);
     
     size_t width;
     size_t height;
@@ -36,10 +35,8 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
                 discarded++;
             }
         }
-        printf("Discarded: %zu of %zu blocks\n", discarded, blockQty);
         freeBlocks(camuflageBlocks, blockQty);  
     }
-    printf("Pares (x, F(x)) obtenidos\n");
 
     byte_t s[blockQty][k];
     for (size_t j = 0; j < blockQty; j++){
@@ -91,7 +88,6 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
             }
         }
     }
-    printf("Bytes obtenidos\n");
     
     FILE * secret = fopen_mkdir(nombreImagenSecreta, "w+");
     if(secret == NULL)
@@ -115,7 +111,6 @@ void recuperar(const char * nombreImagenSecreta, int k, const char *nombreDirect
             fputc(s[j][r], secret);
         }
     }
-    printf("Imagen secreta construida\n");
 
     fclose(secret);
     closeFiles(files, filesQty);

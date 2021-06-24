@@ -28,12 +28,10 @@ void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDi
 
     size_t cantidadDeBloques = 0;
     byte_t ** bloques = getBlocks(imagenSecreta, k, &cantidadDeBloques);
-    printf("Tengo %zu bloques de tamaño %zu\n", cantidadDeBloques, k);
 
     // Obtengo las imagenes de camuflaje
     FILE ** files = getFilesInDirectory(nombreDirectorio, "r+");
     size_t filesQty = numberOfFilesInDirectory(nombreDirectorio);
-    printf("%zu imagenes de camuflaje abiertas\n", filesQty);
 
     byte_t ** usedX = malloc(filesQty * sizeof(*usedX));
     for (size_t fileNumber = 0; fileNumber < filesQty; fileNumber++)
@@ -81,7 +79,6 @@ void distribuir(const char * nombreImagenSecreta, size_t k, const char *nombreDi
         
         freeBlocks(camuflageBlocks, cantidadDeBloques);
     }
-    printf("Imagenes modificadas\n");
 
     for (size_t fileNumber = 0; fileNumber < filesQty; fileNumber++)
     {
