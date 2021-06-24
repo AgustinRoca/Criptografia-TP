@@ -21,5 +21,5 @@ main:$(OBJECT_FILES)
 	$(CC) -o $(OUTPUT_FILE) $^ $(CFLAGS)
 
 .PHONY:clean
-clean: reset
+clean:
 	rm -rf $(OUTPUT_FILE) $(OBJECT_DIR)
